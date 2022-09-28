@@ -5,6 +5,9 @@ Main Branch
 
 
 ## Setup and Build
+Create a `.env` file with keys
+- REACT_APP_MAPBOX_ACCESS_TOKEN
+- REACT_APP_API_TOKEN
 
 Install `nvm`
 
@@ -21,17 +24,11 @@ $ npm install -g serve
 $ serve -s build
 ```
 
-For Testing
-
-  ```
-  $ npm run start
-  $ npm test
-  ```
 ## Directort Structure
 
 - file/directory NAME - `camelCase`, file extension - `tsx` for typescipt and react and `ts` for typescript files
 - `src/`
-  - `components` - for reusable components i.e., `<SearchInput />, <HomePageBackground />
+  - `components` - for reusable components i.e., `<SearchInput />, <HomePageBackground />`
 
 ## APP Dependency
 
