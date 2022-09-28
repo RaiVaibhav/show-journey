@@ -1,7 +1,7 @@
 # Visualise journey
 
 Main Branch
-[![Netlify Status]()
+[![Netlify Status](https://api.netlify.com/api/v1/badges/0fcadd8c-37c8-482a-a74d-267ed4b7974e/deploy-status)](https://app.netlify.com/sites/visualise-journey/deploys)
 
 
 ## Setup and Build

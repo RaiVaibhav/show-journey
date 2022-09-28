@@ -5,7 +5,8 @@ import {
   bearing,
   lineDistance as turfDistance,
 } from "@turf/turf";
-import mapboxgl from "mapbox-gl";
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import mapboxgl from "!mapbox-gl";
 
 export default function PreviewFlight({ origin, destination }) {
   const mapContainer = useRef(null);
