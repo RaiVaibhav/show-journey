@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   along,
   point as turfPoint,
@@ -9,30 +9,37 @@ import {
 import mapboxgl from "!mapbox-gl";
 
 export default function PreviewFlight({ origin, destination }) {
+  const frameIds = useRef([]);
   const mapContainer = useRef(null);
   const map = useRef(null);
-  const routeLayer = {
-    id: "route",
-    source: "route",
-    type: "line",
-    paint: {
-      "line-width": 2,
-      "line-color": "#007cbf",
-    },
-  };
-  const pointLayer = {
-    id: "point",
-    source: "point",
-    type: "symbol",
-    layout: {
-      "icon-image": "airport-15",
-      "icon-size": 1,
-      "icon-rotate": ["get", "bearing"],
-      "icon-rotation-alignment": "map",
-      "icon-allow-overlap": true,
-      "icon-ignore-placement": true,
-    },
-  };
+  const routeLayer = useMemo(
+    () => ({
+      id: "route",
+      source: "route",
+      type: "line",
+      paint: {
+        "line-width": 2,
+        "line-color": "#007cbf",
+      },
+    }),
+    []
+  );
+  const pointLayer = useMemo(
+    () => ({
+      id: "point",
+      source: "point",
+      type: "symbol",
+      layout: {
+        "icon-image": "airport-15",
+        "icon-size": 1,
+        "icon-rotate": ["get", "bearing"],
+        "icon-rotation-alignment": "map",
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+      },
+    }),
+    []
+  );
   useEffect(() => {
     if (map.current) return;
     map.current = new mapboxgl.Map({
@@ -41,13 +48,14 @@ export default function PreviewFlight({ origin, destination }) {
       zoom: 4,
       projection: "mercator",
       style: "mapbox://styles/mapbox/navigation-day-v1",
-      accessToken:
-      process.env.REACT_APP_MAPBOX_ACCESS_TOKEN,
+      accessToken: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN,
     });
-  });
+  }, [origin]);
 
   useEffect(() => {
     if (!map.current) return;
+    frameIds.current.forEach((id) => window.cancelAnimationFrame(id));
+    frameIds.current = [];
     const route = {
       type: "FeatureCollection",
       features: destination.map((i) => ({
@@ -80,6 +88,7 @@ export default function PreviewFlight({ origin, destination }) {
 
       route.features[z].geometry.coordinates = arc;
     }
+    let frameId = null;
     function animate(featureIdx, cntr) {
       if (cntr >= route.features[featureIdx].geometry.coordinates.length - 1) {
         return;
@@ -103,12 +112,12 @@ export default function PreviewFlight({ origin, destination }) {
       map.current.getSource("point").setData(point);
 
       if (cntr < steps) {
-        requestAnimationFrame(function () {
+        frameId = requestAnimationFrame(function () {
           animate(featureIdx, cntr + 1);
         });
+        frameIds.current[featureIdx] = frameId;
       }
     }
-
     map.current.on("load", () => {
       map.current.addSource("route", {
         type: "geojson",
@@ -141,6 +150,6 @@ export default function PreviewFlight({ origin, destination }) {
         animate(j, 0);
       }
     }
-  });
+  }, [origin, destination, pointLayer, routeLayer]);
   return <div className="h-full" ref={mapContainer}></div>;
 }

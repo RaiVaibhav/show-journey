@@ -34,7 +34,7 @@ export default function SearchInput({
     }
   };
   const debouncedSearch = useRef(
-    debounce((nextValue) => search(nextValue), 1000)
+    debounce((nextValue) => search(nextValue), 500)
   );
 
   const [options, setOptions] = useState([]);
